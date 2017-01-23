@@ -189,10 +189,12 @@ function new_client(id, opt, cb) {
     // can't ask for id already is use
     // TODO check this new id again
     if (clients[id]) {
-        if(opt.subdomains === 'all') {
+        debug('client ' + id + ' already exists');
+        if(opt.subdomains[0] === 'all') {
             id = rand_id();
         } else {
             id = fetch_next_id(opt.subdomains);
+            debug('subdomains are limited; using subdomain ' + id);
 
             if(id === null) {
               const err = new Error('All subdomains already in use.');
@@ -233,8 +235,11 @@ function new_client(id, opt, cb) {
 }
 
 function fetch_next_id(available) {
-  for(var id in available) {
-    if(clients[available] === undefined) {
+  for(var i = 0; i < available.length; i++) {
+    var id = available[i];
+    debug('testing subdomain ' + id);
+    if(clients[id] === undefined) {
+      debug(id + ' is available');
       return id;
     }
   }
@@ -256,8 +261,9 @@ module.exports = function(opt) {
 
         var req_id = rand_id();
 
-        if(opt.subdomains !== 'all') {
+        if(opt.subdomains[0] !== 'all') {
           req_id = fetch_next_id(opt.subdomains);
+          debug('subdomains are limited; using subdomain ' + req_id);
 
           if(req_id === null) {
             const err = new Error('All subdomains already in use.');
