@@ -192,9 +192,9 @@ function new_client(id, opt, cb) {
         if(opt.subdomains === 'all') {
             id = rand_id();
         } else {
-            req_id = fetch_next_id(opt.subdomains);
+            id = fetch_next_id(opt.subdomains);
 
-            if(req_id === null) {
+            if(id === null) {
               const err = new Error('All subdomains already in use.');
               err.statusCode = 403;
               return cb(err);
