@@ -234,7 +234,7 @@ function new_client(id, opt, cb) {
 
 function fetch_next_id(available) {
   for(var id in available) {
-    if(clients.indexOf(available) === -1) {
+    if(clients[available] === undefined) {
       return id;
     }
   }
