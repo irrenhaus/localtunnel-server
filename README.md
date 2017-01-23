@@ -56,3 +56,15 @@ docker run -d \
     --net host \
     defunctzombie/localtunnel-server:latest --port 3000
 ```
+
+## Additions from https://github.com/irrenhaus/localtunnel-server/tree/feature/limited_subdomains
+
+I am using letsencrypt for hosting my server. Since letsencrypt can't do wildcard certificates I added the command line option
+`--allowed-subdomains`
+which allows you to specify a limited set of subdomains to give out to clients.
+
+Example:
+`--allowed-subdomains lt1,lt2,lt3,lt4,lt5`
+would result in only lt1.example.com, lt2.example.com, ..., lt5.example.com to be available to clients. localtunnel will then throw an error if all subdomains are being used already.
+
+Just leave out this flag to have the default behaviour of randomly generated subdomains.
