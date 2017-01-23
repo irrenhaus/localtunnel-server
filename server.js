@@ -189,7 +189,17 @@ function new_client(id, opt, cb) {
     // can't ask for id already is use
     // TODO check this new id again
     if (clients[id]) {
-        id = rand_id();
+        if(opt.subdomains === 'all') {
+            id = rand_id();
+        } else {
+            req_id = fetch_next_id(opt.subdomains);
+
+            if(req_id === null) {
+              const err = new Error('All subdomains already in use.');
+              err.statusCode = 403;
+              return cb(err);
+            }
+        }
     }
 
     const popt = {
@@ -222,6 +232,16 @@ function new_client(id, opt, cb) {
     });
 }
 
+function fetch_next_id(available) {
+  for(var id in available) {
+    if(clients.indexOf(available) === -1) {
+      return id;
+    }
+  }
+
+  return null;
+}
+
 module.exports = function(opt) {
     opt = opt || {};
 
@@ -234,7 +254,18 @@ module.exports = function(opt) {
             return next();
         }
 
-        const req_id = rand_id();
+        var req_id = rand_id();
+
+        if(opt.subdomains !== 'all') {
+          req_id = fetch_next_id(opt.subdomains);
+
+          if(req_id === null) {
+            const err = new Error('All subdomains already in use.');
+            err.statusCode = 403;
+            return next(err);
+          }
+        }
+
         debug('making new client with id %s', req_id);
         new_client(req_id, opt, function(err, info) {
             if (err) {

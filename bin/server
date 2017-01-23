@@ -21,6 +21,10 @@ const argv = optimist
         default: 10,
         describe: 'maximum number of tcp sockets each client is allowed to establish at one time (the tunnels)'
     })
+    .options('allowed-subdomains', {
+        default: 'all',
+        describe: 'limits the used subdomains to those given (comma separated) with this flag'
+    })
     .argv;
 
 if (argv.help) {
@@ -30,11 +34,13 @@ if (argv.help) {
 
 const server = require('../server')({
     max_tcp_sockets: argv['max-sockets'],
-    secure: argv.secure
+    secure: argv.secure,
+    subdomains: argv['allowed-subdomains'].split(',')
 });
 
 server.listen(argv.port, () => {
     debug('server listening on port: %d', server.address().port);
+    debug('available subdomains: ' + argv['allowed-subdomains']);
 });
 
 process.on('SIGINT', () => {
